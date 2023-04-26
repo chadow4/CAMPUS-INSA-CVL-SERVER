@@ -2,8 +2,8 @@ import { IsEmail, IsNotEmpty } from "class-validator";
 import { Role } from "../auth/interface/role.enum";
 
 export interface UserCreateDto {
-  firstName: string;
-  lastName: string;
+  firstname: string;
+  lastname: string;
   email: string;
   password: string;
 }

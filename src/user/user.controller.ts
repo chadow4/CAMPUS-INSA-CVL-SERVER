@@ -1,7 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Put, Request, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpException, Param, Put, Request, UseGuards } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { UserDeleteDto, UserUpdateDto } from "./user.dto";
-import { UpdateResult } from "typeorm";
 import { HasRoles } from "../auth/has-roles.decorator";
 import { Role } from "../auth/interface/role.enum";
 import { AuthGuard } from "@nestjs/passport";
@@ -29,8 +28,7 @@ export class UserController {
   async findOneById(@Param("id") id: number) {
     try {
       return await this.userService.findOneById(id);
-    }
-    catch (error) {
+    } catch (error) {
       return {
         statusCode: error.getStatus(),
         message: error.message
@@ -42,9 +40,8 @@ export class UserController {
   @UseGuards(AuthGuard("jwt"))
   async updateUser(@Request() req, @Body() userUpdateDto: UserUpdateDto) {
     try {
-      return await this.userService.updateUser(req.user.id,userUpdateDto);
-    }
-    catch (error) {
+      return await this.userService.updateUser(req.user.id, userUpdateDto);
+    } catch (error) {
       return {
         statusCode: error.getStatus(),
         message: error.message
@@ -55,16 +52,18 @@ export class UserController {
   @Delete(":id")
   @HasRoles(Role.Admin)
   @UseGuards(AuthGuard("jwt"), RolesGuard)
-  async deleteUser(user: UserDeleteDto) {
+  async deleteUse(@Param("id") id: number) {
     try {
-      return await this.userService.deleteUser(user);
+      return await this.userService.deleteUser(id);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        return {
+          statusCode: error.getStatus(),
+          message: error.message
+        };
+      }
     }
-    catch (error) {
-      return {
-        statusCode: error.getStatus(),
-        message: error.message
-      };
-    }
-  }
 
+  }
 }
+

@@ -56,7 +56,7 @@ export class UserService {
   }
 
   async createUser(userCreateDto: UserCreateDto): Promise<void> {
-    if (!userCreateDto.firstName || !userCreateDto.lastName || !userCreateDto.email || !userCreateDto.password) {
+    if (!userCreateDto.firstname || !userCreateDto.lastname || !userCreateDto.email || !userCreateDto.password) {
       throw new HttpException("Missing Fields", HttpStatus.BAD_REQUEST);
     }
     const existingUser = await this.usersRepository.findOne({ where: { email: userCreateDto.email } });
@@ -64,7 +64,6 @@ export class UserService {
       throw new HttpException("User Already Exist", HttpStatus.CONFLICT);
     }
     const user = this.usersRepository.create(userCreateDto);
-    user.role = <Role>"user";
     try {
       await this.usersRepository.save(user);
     } catch (error) {
@@ -85,8 +84,8 @@ export class UserService {
     }
   }
 
-  async deleteUser(userDeleteDto: UserDeleteDto): Promise<boolean> {
-    const user = await this.usersRepository.findOne({ where: { id: userDeleteDto.id } });
+  async deleteUser(idUser : number): Promise<boolean> {
+    const user = await this.usersRepository.findOne({ where: { id: idUser } });
     if (!user) {
       throw new HttpException("User not Found", HttpStatus.NOT_FOUND);
     }

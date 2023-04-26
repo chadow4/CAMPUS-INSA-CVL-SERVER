@@ -32,8 +32,10 @@ export class AuthService {
   }
 
   async login(loginUserDto: UserLoginDto): Promise<LoginStatus> {
+    if(!loginUserDto.email || !loginUserDto.password){
+      throw new HttpException("email and password are required", HttpStatus.BAD_REQUEST);
+    }
     // find user in db
-    console.log(loginUserDto);
     const user = await this.usersService.findByLogin(loginUserDto);
     // generate and sign token
     const token = this._createToken(user);
