@@ -5,6 +5,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { ConfigModule } from "@nestjs/config";
 import { UserModule } from './user/user.module';
 import { UserEntity } from "./user/user.entity";
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [ ConfigModule.forRoot(),TypeOrmModule.forRoot({
@@ -16,7 +17,7 @@ import { UserEntity } from "./user/user.entity";
     database: "campusinsacvl",
     entities: [UserEntity], // adding entities
     synchronize: true
-  }), UserModule,
+  }), UserModule, AuthModule,
 ],
   controllers: [AppController],
   providers: [AppService],

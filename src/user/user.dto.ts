@@ -1,4 +1,5 @@
 import { IsEmail, IsNotEmpty } from "class-validator";
+import { Role } from "../auth/interface/role.enum";
 
 export interface UserCreateDto {
   firstName: string;
@@ -37,4 +38,7 @@ export class UserDto {
   @IsNotEmpty()
   @IsEmail()
   email: string;
+
+  role: Role;
+
 }

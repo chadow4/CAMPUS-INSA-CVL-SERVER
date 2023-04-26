@@ -5,6 +5,7 @@ import { Repository } from "typeorm";
 import * as bcrypt from "bcrypt";
 import { UserCreateDto, UserDeleteDto, UserDto, UserLoginDto, UserUpdateDto } from "./user.dto";
 import { toUserDto } from "../shared/mapper";
+import { Role } from "../auth/interface/role.enum";
 
 @Injectable()
 export class UserService {
@@ -63,6 +64,7 @@ export class UserService {
       throw new HttpException("User Already Exist", HttpStatus.CONFLICT);
     }
     const user = this.usersRepository.create(userCreateDto);
+    user.role = <Role>"user";
     try {
       await this.usersRepository.save(user);
     } catch (error) {
@@ -70,8 +72,8 @@ export class UserService {
     }
   }
 
-  async updateUser(userUpdateDto: UserUpdateDto): Promise<UserDto> {
-    const user = await this.usersRepository.findOne({ where: { id: 1 } });
+  async updateUser(sessionId: number, userUpdateDto: UserUpdateDto): Promise<UserDto> {
+    const user = await this.usersRepository.findOne({ where: { id: sessionId} });
     if (!user) {
       throw new HttpException("User not Found", HttpStatus.NOT_FOUND);
     }

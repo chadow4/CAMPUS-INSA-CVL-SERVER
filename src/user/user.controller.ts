@@ -1,7 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Put, Req } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Put, Request, UseGuards } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { UserDeleteDto, UserUpdateDto } from "./user.dto";
 import { UpdateResult } from "typeorm";
+import { HasRoles } from "../auth/has-roles.decorator";
+import { Role } from "../auth/interface/role.enum";
+import { AuthGuard } from "@nestjs/passport";
+import { RolesGuard } from "../auth/roles.guard";
 
 @Controller("user")
 export class UserController {
@@ -35,10 +39,10 @@ export class UserController {
   }
 
   @Put()
-  // todo check if user is logged and search id by payload
-  async updateUser(@Body() userUpdateDto: UserUpdateDto) {
+  @UseGuards(AuthGuard("jwt"))
+  async updateUser(@Request() req, @Body() userUpdateDto: UserUpdateDto) {
     try {
-      return await this.userService.updateUser(userUpdateDto);
+      return await this.userService.updateUser(req.user.id,userUpdateDto);
     }
     catch (error) {
       return {
@@ -49,7 +53,8 @@ export class UserController {
   }
 
   @Delete(":id")
-  // todo check if user is logged and admin
+  @HasRoles(Role.Admin)
+  @UseGuards(AuthGuard("jwt"), RolesGuard)
   async deleteUser(user: UserDeleteDto) {
     try {
       return await this.userService.deleteUser(user);
