@@ -76,8 +76,12 @@ export class UserService {
     if (!user) {
       throw new HttpException("User not Found", HttpStatus.NOT_FOUND);
     }
+
+    // Update the user object with the values from the userUpdateDto
+    Object.assign(user, userUpdateDto);
+
     try {
-      await this.usersRepository.save(userUpdateDto);
+      await this.usersRepository.save(user);
       return toUserDto(user);
     } catch (error) {
       throw new HttpException("Error Updating User", HttpStatus.INTERNAL_SERVER_ERROR);
